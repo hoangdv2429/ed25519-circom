@@ -65,30 +65,32 @@ describe('Batch Verification', () => {
         5004556735901913393272427758925840403246877222315506387332009764265656498271n,
         22493278956989295319831480986006851106061907369804654499116800046813764104n,
       ];
-      let bufMsg = [];
+      // let bufMsg = [];
       let bufR8 = [];
       let bufS = [];
       let bufA = [];
-      let bitsMsg = [];
+      // let bitsMsg = [];
       let bitsR8 = [];
       let bitsS = [];
       let bitsA = [];
-      // for (let i = 0; i < 3; i++) {
-        bufMsg.push(utils.bigIntToLEBuffer(msg));
-        bufR8.push(utils.bigIntToLEBuffer(R8[0]));
-        bufS.push(utils.bigIntToLEBuffer(S[0]));
-        bufA.push(utils.bigIntToLEBuffer(A[0]));
-      // }
-      // for (let i = 0; i < 3; i++) {
-        bitsMsg.push(utils.pad(utils.buffer2bits(bufMsg[0]), 16));
-        bitsR8.push(utils.pad(utils.buffer2bits(bufR8[0]), 256));
-        bitsS.push(utils.pad(utils.buffer2bits(bufS[0]), 255).slice(0, 255));
-        bitsA.push(utils.pad(utils.buffer2bits(bufA[0]), 256));
-      // }
+      const bufMsg = utils.bigIntToLEBuffer(msg);
+      const bitsMsg = utils.pad(utils.buffer2bits(bufMsg), 16);
+      for (let i = 0; i < 3; i++) {
+        bufR8.push(utils.bigIntToLEBuffer(R8[i]));
+        bufS.push(utils.bigIntToLEBuffer(S[i]));
+        bufA.push(utils.bigIntToLEBuffer(A[i]));
+      }
+      for (let i = 0; i < 3; i++) {
+        bitsR8.push(utils.pad(utils.buffer2bits(bufR8[i]), 256));
+        // bitsR8 = bitsR8.concat(utils.pad(utils.buffer2bits(bufR8[i]), 256));
+        bitsS.push(utils.pad(utils.buffer2bits(bufS[i]), 255).slice(0, 255));
+        // bitsS = bitsS.concat(utils.pad(utils.buffer2bits(bufS[i]), 255).slice(0, 255));
+        // bitsA = bitsA.concat(utils.pad(utils.buffer2bits(bufA[i]), 256));
+        bitsA.push(utils.pad(utils.buffer2bits(bufA[i]), 256));
+      }
       const chunkA = [];
       const chunkR = [];
-      // for (let j = 0; j < 3; j++) {
-      let j = 0;
+      for (let j = 0; j < 3; j++) {
         let chunkATemp = [];
         let chunkRTemp = [];
         for (let i = 0; i < 4; i++) {
@@ -101,7 +103,7 @@ describe('Batch Verification', () => {
         }
         chunkA.push(chunkATemp);
         chunkR.push(chunkRTemp);
-      // }
+      }
 
       const witness = await cir.calculateWitness({
         msg: bitsMsg, A: bitsA, R8: bitsR8, S: bitsS, PointA: chunkA, PointR: chunkR,
